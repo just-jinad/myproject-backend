@@ -1,5 +1,53 @@
 // translations.js
 const translations = {
+                                              // NAVBAR TRANSLATION
+   signup: {
+      en: "Get Started",
+      yo: "Bẹrẹ ",
+    },
+
+    login: {
+      en: "Login",
+      yo: "Wọlé ",
+    },
+    logout:{
+      en:"Logout",
+      yo:" Jáde"
+    },
+    logoutQue:{
+      en:"Are you sure you want to logout?",
+      yo:"Ṣe o da ọ loju pe o fẹ jade?"
+    },
+    logoutQue2:{
+      en:"Yes, Logout",
+      yo:"Bẹẹni, Jade"
+    },
+    logoutQue3:{
+      en:"Cancel",
+      yo:"Fagile"
+    },
+    
+    
+
+    about:{
+      en:"About us",
+      yo:"Nípa re"
+    },
+    aboutChild:{
+      en:"Contact us",
+      yo:"Kan si wa"
+    },
+    aboutChild2:{
+      en:"Our People",
+      yo:"Ẹni Wa"
+    },
+    aboutChild3:{
+      en:"FAQ",
+      yo:"Awon Ibeere"
+    },
+
+
+                                              // HOMEPAGE TRANSLATION
     welcome_message: {
       en: "Your story starts with us.",
       yo: "Itan rẹ bẹrẹ pẹlu wa.",
@@ -84,10 +132,41 @@ const translations = {
       en: "Some Listed Products",  
       yo: "Àwọn Nnkan Tí A Ṣàtúnṣe",
     },
+                                            // SIGNUP TRANSLATION
+    signupWords:{
+      en: "Grow. Farm. Sell",
+      yo: "Dagba. Ọkọ. Ta."
+    },
 
+     typewriter: {
+      en: "FarmCon is committed to empowering Nigerian farmers by providing them with a direct avenue to showcase 		and sell their produce. We believe in the importance of supporting local agriculture and helping farmers 		thrive in their communities.",  
+      yo: "FarmCon jẹ ipinnu lati jẹki awọn agbẹ Naijiria nipa fifun wọn ni ọna taara lati ṣe afihan ati ta ọja wọn. A gbagbọ ninu pataki ti atilẹyin iṣẹ-ogbin agbegbe ati iranlọwọ fun awọn agbẹ lati ni idagbasoke ninu agbegbe wọn.",
+    },
+
+    question1:{
+      en:"Don't have an account?",
+      yo:"Ṣe o ko ni akọọlẹ kan sibẹsibẹ?"
+    },
+
+    signupCall:{
+      en:"Sign Up",
+      yo:"Forukọsilẹ"
+    },
+    question2:{
+      en:"Already have an account?",
+      yo:"Ṣe o ti ni akọọlẹ tẹlẹ?"
+    },
+
+    email:{
+      en:"Email address:",
+      yo:"Adirẹsi imeeli:"
+    },
+    password: {
+      en: "Password:",
+      yo: "Ọrọigbaniwọle:"
+    },
 
     // NOT RELEVANT FOR NOW
-    
     contact_us: {
       en: "Contact Us",
       yo: "Pe wa",
