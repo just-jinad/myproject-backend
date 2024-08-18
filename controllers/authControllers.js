@@ -63,8 +63,11 @@ exports.login = (req, res) => {
     const token = jwt.sign({ id: user.user_id }, "your_jwt_secret_key", {
       expiresIn: "1h",
     });
+    const user_id  = user.user_id
+    console.log(user_id);
+    
     console.log("this is the token from frontend:", token);
-    res.status(200).json({ token });
+    res.status(200).json({ token, user_id});
   });
 };
 
@@ -178,3 +181,6 @@ exports.forgotPassword = (req, res) => {
     });
   });
 };
+
+
+

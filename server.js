@@ -1,15 +1,31 @@
+// server.js or app.js
 const express = require("express");
-const app = express();
 const cors = require("cors");
-const port = 8888;
-const authControllers = require("./controllers/authControllers");
-const verifyToken = require("./middlewares/authMiddleware");
-const fs = require("fs");
+const http = require("http");
+const socketIo = require("socket.io");
 const path = require("path");
-require("dotenv").config();
-const translations  = require('./translation')
+const fs = require("fs");
+const dotenv = require("dotenv");
+const authControllers = require("./controllers/authControllers");
+const chatControllers = require("./controllers/chatController");
+const verifyToken = require("./middlewares/authMiddleware");
+const db = require("./db");
+const translations = require('./translation');
 
-// Ensure the 'uploads' directory exists
+dotenv.config();
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+
+const port = process.env.PORT || 8888;
+
+// Ensure upload directory exists
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -19,32 +35,23 @@ app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
 
-app.get("/", (req, res) => {
-  return res.json("Welcome to the backend page");
-});
+app.get("/", (req, res) => res.json("Welcome to the backend page"));
 
 app.post("/register", authControllers.register);
 app.post("/login", authControllers.login);
-app.post(
-  "/upload",
-  verifyToken,
-  authControllers.upload.single("file"),
-  authControllers.uploadProduct
-);
+app.post("/upload", verifyToken, authControllers.upload.single("file"), authControllers.uploadProduct);
 app.get("/user/products", verifyToken, authControllers.getUserProducts);
 app.get("/products", verifyToken, authControllers.getAllProducts);
-
 app.post("/forgot-password", authControllers.forgotPassword);
-
+app.post('/startChat', chatControllers.startChat);
+app.get('/getMessages/:chatId', chatControllers.getMessages);
 
 app.post('/translate', (req, res) => {
   const { keys, language } = req.body;
-
   if (!keys || !language) {
     return res.status(400).json({ error: 'Keys and language are required' });
   }
 
-  // Fetch translations
   const translatedTexts = keys.reduce((acc, key) => {
     acc[key] = translations[key] ? translations[key][language] || translations[key].en : key;
     return acc;
@@ -53,7 +60,48 @@ app.post('/translate', (req, res) => {
   res.json(translatedTexts);
 });
 
-app.listen(port, () => {
-  console.log("Lift up, app is working");
+app.get('/messages/:chat_id', (req, res) => {
+  const chat_id = req.params.chat_id;
+  db.query(
+    "SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at ASC", // Adjust column names as needed
+    [chat_id],
+    (error, results) => {
+      if (error) return res.status(500).send(error);
+      res.status(200).send(results);
+    }
+  );
 });
 
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  socket.on("joinChat", ({ chatId }) => {
+    socket.join(chatId);
+    console.log(`User joined chat: ${chatId}`);
+  });
+
+  socket.on("sendMessage", (msg) => {
+    const { chatId, senderId, content } = msg;
+
+    console.log(`Message received from ${senderId} in chat ${chatId}: ${content}`);
+
+    // Save the content to the database
+    const query = 'INSERT INTO messages (chat_id, sender_id, content) VALUES (?, ?, ?)';
+    db.query(query, [chatId, senderId, content], (err) => {
+      if (err) {
+        console.error("Error saving content to the database:", err);
+      } else {
+        io.to(chatId).emit("receiveMessage", { senderId, content});
+      }
+    });
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
