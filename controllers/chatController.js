@@ -35,11 +35,3 @@ exports.startChat = (req, res) => {
     });
   };
   
-//   exports.getMessages = (req, res) => {
-//     const { chatId } = req.params;
-//     const query = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at ASC';
-//     db.query(query, [chatId], (err, results) => {
-//       if (err) return res.status(500).send(err);
-//       res.status(200).send(results);
-//     });
-//   };

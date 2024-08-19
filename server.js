@@ -1,4 +1,3 @@
-// server.js or app.js
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
@@ -10,7 +9,6 @@ const authControllers = require("./controllers/authControllers");
 const chatControllers = require("./controllers/chatController");
 const verifyToken = require("./middlewares/authMiddleware");
 const db = require("./db");
-const translations = require('./translation');
 
 dotenv.config();
 
@@ -25,7 +23,6 @@ const io = socketIo(server, {
 
 const port = process.env.PORT || 8888;
 
-// Ensure upload directory exists
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
@@ -43,8 +40,9 @@ app.post("/upload", verifyToken, authControllers.upload.single("file"), authCont
 app.get("/user/products", verifyToken, authControllers.getUserProducts);
 app.get("/products", verifyToken, authControllers.getAllProducts);
 app.post("/forgot-password", authControllers.forgotPassword);
+
 app.post('/startChat', chatControllers.startChat);
-app.get('/getMessages/:chatId', chatControllers.getMessages);
+app.get('/messages/:chatId', chatControllers.getMessages);
 
 app.post('/translate', (req, res) => {
   const { keys, language } = req.body;
@@ -60,18 +58,6 @@ app.post('/translate', (req, res) => {
   res.json(translatedTexts);
 });
 
-app.get('/messages/:chat_id', (req, res) => {
-  const chat_id = req.params.chat_id;
-  db.query(
-    "SELECT * FROM messages WHERE chat_id = ? ORDER BY created_at ASC", // Adjust column names as needed
-    [chat_id],
-    (error, results) => {
-      if (error) return res.status(500).send(error);
-      res.status(200).send(results);
-    }
-  );
-});
-
 io.on("connection", (socket) => {
   console.log("New client connected");
 
@@ -85,14 +71,19 @@ io.on("connection", (socket) => {
 
     console.log(`Message received from ${senderId} in chat ${chatId}: ${content}`);
 
-    // Save the content to the database
     const query = 'INSERT INTO messages (chat_id, sender_id, content) VALUES (?, ?, ?)';
     db.query(query, [chatId, senderId, content], (err) => {
       if (err) {
-        console.error("Error saving content to the database:", err);
-      } else {
-        io.to(chatId).emit("receiveMessage", { senderId, content});
+        console.error("Error saving message to the database:", err);
+        return;
       }
+
+      io.to(chatId).emit("receiveMessage", {
+        chatId,
+        senderId,
+        content,
+        created_at: new Date(),
+      });
     });
   });
 
@@ -100,7 +91,6 @@ io.on("connection", (socket) => {
     console.log("Client disconnected");
   });
 });
-
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
