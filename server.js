@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const authControllers = require("./controllers/authControllers");
 const chatControllers = require("./controllers/chatController");
 const verifyToken = require("./middlewares/authMiddleware");
+const translations = require('./translation');
 const db = require("./db");
 
 dotenv.config();
@@ -39,6 +40,9 @@ app.post("/login", authControllers.login);
 app.post("/upload", verifyToken, authControllers.upload.single("file"), authControllers.uploadProduct);
 app.get("/user/products", verifyToken, authControllers.getUserProducts);
 app.get("/products", verifyToken, authControllers.getAllProducts);
+
+app.put("/user/updateProfile", verifyToken, authControllers.updateUserProfile);
+
 app.post("/forgot-password", authControllers.forgotPassword);
 
 app.post('/startChat', chatControllers.startChat);

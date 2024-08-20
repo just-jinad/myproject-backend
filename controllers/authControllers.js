@@ -5,14 +5,14 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const cloudinary = require('../cloudinaryConfig');
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require("../cloudinaryConfig");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'uploads',
-    format: async (req, file) => 'jpg', // supports promises as well
+    folder: "uploads",
+    format: async (req, file) => "jpg", // supports promises as well
     public_id: (req, file) => Date.now() + path.extname(file.originalname),
   },
 });
@@ -63,11 +63,11 @@ exports.login = (req, res) => {
     const token = jwt.sign({ id: user.user_id }, "your_jwt_secret_key", {
       expiresIn: "1h",
     });
-    const user_id  = user.user_id
+    const user_id = user.user_id;
     console.log(user_id);
-    
+
     console.log("this is the token from frontend:", token);
-    res.status(200).json({ token, user_id});
+    res.status(200).json({ token, user_id });
   });
 };
 
@@ -106,7 +106,7 @@ exports.uploadProduct = (req, res) => {
         console.error("Error uploading product:", err);
         return res.status(500).send("Failed to upload product");
       }
-      res.status(200).send({message: "Product uploaded successfully",});
+      res.status(200).send({ message: "Product uploaded successfully" });
     }
   );
 };
@@ -114,18 +114,24 @@ exports.uploadProduct = (req, res) => {
 exports.upload = upload;
 
 exports.getUserProducts = (req, res) => {
-  const userId = req.userId; 
+  const userId = req.userId;
+  console.log(userId);
+  
+  const sql = `
+  SELECT p.*, u.profilePicture, u.first_name, u.bio, u.location 
+  FROM farmcon_user u
+  LEFT JOIN products p ON p.user_id = u.user_id
+  WHERE u.user_id = ?
+`;
 
-  const sql = "SELECT * FROM `products` WHERE `user_id` = ?";
   db.query(sql, [userId], (err, results) => {
     if (err) {
-      console.error("Error fetching user products:", err);
-      return res.status(500).send("Failed to fetch user products");
+      console.error("Error fetching user products and profile:", err);
+      return res.status(500).send("Failed to fetch user products and profile");
     }
     res.status(200).json(results);
   });
 };
-
 
 exports.getAllProducts = (req, res) => {
   const sql = "SELECT * FROM `products`";
@@ -138,6 +144,25 @@ exports.getAllProducts = (req, res) => {
   });
 };
 
+
+exports.updateUserProfile = (req, res) => {
+  const userId = req.userId; 
+  const { bio, location, profilePicture } = req.body;
+
+  const sql = `
+    UPDATE farmcon_user
+    SET bio = ?, location = ?, profilePicture = ?
+    WHERE user_id = ?
+  `;
+
+  db.query(sql, [bio, location, profilePicture, userId], (err, result) => {
+    if (err) {
+      console.error("Error updating profile:", err);
+      return res.status(500).send("Failed to update profile");
+    }
+    res.status(200).send("Profile updated successfully");
+  });
+};
 
 
 exports.forgotPassword = (req, res) => {
@@ -181,6 +206,3 @@ exports.forgotPassword = (req, res) => {
     });
   });
 };
-
-
-
