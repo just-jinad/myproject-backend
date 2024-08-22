@@ -35,19 +35,23 @@ let db;
 
 function handleDisconnect() {
     db = mysql.createConnection(db_config); // Recreate the connection
-    setInterval(() => {
-        db.query('SELECT 1');
-    }, 60000);
+  
 
     db.connect((err) => {
         if (err) {
             console.error('Error connecting to the database:', err);
-            setTimeout(handleDisconnect, 2000); // Wait 2 seconds before retrying the connection
+            setTimeout(handleDisconnect, 3000); // Wait 2 seconds before retrying the connection
         } else {
             console.log('Connected to the database!');
+            setInterval(() => {
+                db.query('SELECT 1');
+            }, 60000);
         }
     });
+        // MY NODE BACKEND
+    // https://myproject-backend-voab.onrender.com/ 
 
+    
     // Handle errors after the connection is established
     db.on('error', (err) => {
         console.error('Database error:', err);
