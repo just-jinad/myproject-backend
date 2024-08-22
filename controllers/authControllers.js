@@ -134,7 +134,7 @@ exports.getUserProducts = (req, res) => {
 };
 
 exports.getAllProducts = (req, res) => {
-  const sql = "SELECT * FROM `products`";
+  const sql = "SELECT products.*, farmcon_user.phone_number FROM products JOIN farmcon_user ON products.user_id = farmcon_user.user_id;";
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching all products:", err);
