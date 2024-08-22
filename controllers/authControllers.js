@@ -19,6 +19,8 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
+          
+      // FUNCTION TO SIGNUP
 exports.register = async (req, res) => {
   const { first_name, last_name, email, address, phone_number, password } =
     req.body;
@@ -37,7 +39,8 @@ exports.register = async (req, res) => {
     }
   );
 };
-
+        
+      // FUNCTION TO LOGIN
 exports.login = (req, res) => {
   const { email, password } = req.body;
   const sql = "SELECT * FROM `farmcon_user` WHERE `email` = ?";
@@ -71,6 +74,8 @@ exports.login = (req, res) => {
   });
 };
 
+  
+      // FUNCTION TO UPLOAD PRODUCT
 exports.uploadProduct = (req, res) => {
   const {
     productName,
@@ -113,6 +118,9 @@ exports.uploadProduct = (req, res) => {
 
 exports.upload = upload;
 
+
+
+      // FUNCTION TO GET ALL USER PRODUCT
 exports.getUserProducts = (req, res) => {
   const userId = req.userId;
   console.log(userId);
@@ -133,6 +141,8 @@ exports.getUserProducts = (req, res) => {
   });
 };
 
+
+      // FUNCTION TO GET ALL PRODUCT
 exports.getAllProducts = (req, res) => {
   const sql = "SELECT products.*, farmcon_user.phone_number FROM products JOIN farmcon_user ON products.user_id = farmcon_user.user_id;";
   db.query(sql, (err, results) => {

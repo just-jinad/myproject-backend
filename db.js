@@ -51,7 +51,7 @@ function handleDisconnect() {
         // MY NODE BACKEND
     // https://myproject-backend-voab.onrender.com/ 
 
-    
+
     // Handle errors after the connection is established
     db.on('error', (err) => {
         console.error('Database error:', err);
