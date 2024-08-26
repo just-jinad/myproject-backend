@@ -102,6 +102,8 @@ exports.uploadProduct = (req, res) => {
       category,
       price,
       availability,
+      unitPrice,
+      minimumOrder, 
       location,
       file.path, // Cloudinary URL
       userId,
