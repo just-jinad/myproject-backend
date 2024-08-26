@@ -83,6 +83,8 @@ exports.uploadProduct = (req, res) => {
     category,
     price,
     availability,
+    unitPrice,
+    minimumOrder,
     location,
   } = req.body;
   const file = req.file;
