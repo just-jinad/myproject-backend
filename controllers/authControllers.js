@@ -111,7 +111,7 @@ exports.uploadProduct = (req, res) => {
         console.error("Error uploading product:", err);
         return res.status(500).send("Failed to upload product");
       }
-      res.status(200).send({ message: "Product uploaded successfully" });
+      res.status(200).send({ message: "Product uploaded successfully", status:200 });
     }
   );
 };
