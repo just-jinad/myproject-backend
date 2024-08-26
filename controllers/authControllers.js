@@ -93,7 +93,7 @@ exports.uploadProduct = (req, res) => {
   }
 
   const sql =
-    "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `location`, `imagePath`, `user_id`) VALUES (?,?,?,?,?,?,?,?)";
+    "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`,  `location`, `imagePath`, `user_id`) VALUES (?,?,?,?,?,?,?,?)";
   db.query(
     sql,
     [
