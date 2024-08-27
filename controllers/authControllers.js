@@ -99,7 +99,7 @@ exports.uploadProduct = (req, res) => {
   const imagePaths = files.map(file => file.path); // Get the paths of all uploaded files
 
   const sql =
-    "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`, `location`, `imagePaths`, `user_id`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`, `location`, `imagePath`, `user_id`) VALUES (?,?,?,?,?,?,?,?,?,?)";
 
   db.query(
     sql,
