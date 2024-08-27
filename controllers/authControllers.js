@@ -1,10 +1,10 @@
 const db = require("../db");
 const bcrypt = require("bcryptjs");
-const multer = require("multer");
-const path = require("path");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+const path = require("path");
+const multer = require("multer");
 const cloudinary = require("../cloudinaryConfig");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
@@ -76,50 +76,53 @@ exports.login = (req, res) => {
 
   
       // FUNCTION TO UPLOAD PRODUCT
-exports.uploadProduct = (req, res) => {
-  const {
-    productName,
-    productDescription,
-    category,
-    price,
-    availability,
-    unitPrice,
-    minimumOrder,
-    location,
-  } = req.body;
-  const file = req.file;
-  const userId = req.userId; // This is extracted from JWT token
-
-  if (!file) {
-    return res.status(400).send("No file uploaded");
-  }
-
-  const sql =
-    "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`,  `location`, `imagePath`, `user_id`) VALUES (?,?,?,?,?,?,?,?,?,?)";
-  db.query(
-    sql,
-    [
-      productName,
-      productDescription,
-      category,
-      price,
-      availability,
-      unitPrice,
-      minimumOrder, 
-      location,
-      file.path, // Cloudinary URL
-      userId,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error("Error uploading product:", err);
-        return res.status(500).send("Failed to upload product");
-      }
-      res.status(200).send({ message: "Product uploaded successfully", status:200 });
-    }
-  );
-};
-
+      exports.upload = (req, res) => {
+        const {
+          productName,
+          productDescription,
+          category,
+          price,
+          availability,
+          unitPrice,
+          minimumOrder,
+          location,
+        } = req.body;
+        const files = req.files; // Array of files
+        const userId = req.userId; // Extracted from JWT token
+      
+        if (!files || files.length === 0) {
+          return res.status(400).send("No files uploaded");
+        }
+      
+        const imagePaths = files.map(file => file.path); // Get the paths of all uploaded files
+      
+        const sql =
+          "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`, `location`, `imagePaths`, `user_id`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+      
+        db.query(
+          sql,
+          [
+            productName,
+            productDescription,
+            category,
+            price,
+            availability,
+            unitPrice,
+            minimumOrder, 
+            location,
+            JSON.stringify(imagePaths), // Store paths as a JSON string
+            userId,
+          ],
+          (err, result) => {
+            if (err) {
+              console.error("Error uploading product:", err);
+              return res.status(500).send("Failed to upload product");
+            }
+            res.status(200).send({ message: "Product uploaded successfully", status: 200 });
+          }
+        );
+      };
+      
 exports.upload = upload;
 
 

@@ -37,7 +37,7 @@ app.get("/", (req, res) => res.json("Welcome to the backend page"));
 
 app.post("/register", authControllers.register);
 app.post("/login", authControllers.login);
-app.post("/upload", verifyToken, authControllers.upload.single("file"), authControllers.uploadProduct);
+app.post("/upload", verifyToken, authControllers.upload.array("files"), authControllers.uploadProduct);
 app.get("/user/products", verifyToken, authControllers.getUserProducts);
 app.get("/products", verifyToken, authControllers.getAllProducts);
 
