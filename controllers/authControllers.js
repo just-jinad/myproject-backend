@@ -164,7 +164,7 @@ exports.getProductsDetail = (req, res) => {
   const { id } = req.params;
   
   // Assuming you're using a database query to fetch product details
-  const sql = 'SELECT * FROM products WHERE id = ?';
+  const sql = 'SELECT * FROM products WHERE product_id = ?';
   db.query(sql, [id], (err, result) => {
     if (err) {
       console.error('Error fetching product details:', err);
