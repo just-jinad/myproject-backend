@@ -19,8 +19,7 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-          
-      // FUNCTION TO SIGNUP
+// FUNCTION TO SIGNUP
 exports.register = async (req, res) => {
   const { first_name, last_name, email, address, phone_number, password } =
     req.body;
@@ -39,8 +38,8 @@ exports.register = async (req, res) => {
     }
   );
 };
-        
-      // FUNCTION TO LOGIN
+
+// FUNCTION TO LOGIN
 exports.login = (req, res) => {
   const { email, password } = req.body;
   const sql = "SELECT * FROM `farmcon_user` WHERE `email` = ?";
@@ -74,9 +73,8 @@ exports.login = (req, res) => {
   });
 };
 
-  
-      // FUNCTION TO UPLOAD PRODUCT
-    
+// FUNCTION TO UPLOAD PRODUCT
+
 exports.upload = upload;
 exports.uploadProduct = (req, res) => {
   const {
@@ -96,7 +94,7 @@ exports.uploadProduct = (req, res) => {
     return res.status(400).send("No files uploaded");
   }
 
-  const imagePaths = files.map(file => file.path); // Get the paths of all uploaded files
+  const imagePaths = files.map((file) => file.path); // Get the paths of all uploaded files
 
   const sql =
     "INSERT INTO `products`( `productName`, `productDescription`, `category`, `price`, `availability`, `unitPrice`, `minimumOrder`, `location`, `imagePath`, `user_id`) VALUES (?,?,?,?,?,?,?,?,?,?)";
@@ -110,7 +108,7 @@ exports.uploadProduct = (req, res) => {
       price,
       availability,
       unitPrice,
-      minimumOrder, 
+      minimumOrder,
       location,
       JSON.stringify(imagePaths), // Store paths as a JSON string
       userId,
@@ -120,18 +118,18 @@ exports.uploadProduct = (req, res) => {
         console.error("Error uploading product:", err);
         return res.status(500).send("Failed to upload product");
       }
-      res.status(200).send({ message: "Product uploaded successfully", status: 200 });
+      res
+        .status(200)
+        .send({ message: "Product uploaded successfully", status: 200 });
     }
   );
 };
 
-
-
-      // FUNCTION TO GET ALL USER PRODUCT
+// FUNCTION TO GET ALL USER PRODUCT
 exports.getUserProducts = (req, res) => {
   const userId = req.userId;
   console.log(userId);
-  
+
   const sql = `
   SELECT p.*, u.profilePicture, u.first_name, u.bio, u.location 
   FROM farmcon_user u
@@ -148,10 +146,10 @@ exports.getUserProducts = (req, res) => {
   });
 };
 
-
-      // FUNCTION TO GET ALL PRODUCT
+// FUNCTION TO GET ALL PRODUCT
 exports.getAllProducts = (req, res) => {
-  const sql = "SELECT products.*, farmcon_user.phone_number FROM products JOIN farmcon_user ON products.user_id = farmcon_user.user_id;";
+  const sql =
+    "SELECT products.*, farmcon_user.phone_number FROM products JOIN farmcon_user ON products.user_id = farmcon_user.user_id;";
   db.query(sql, (err, results) => {
     if (err) {
       console.error("Error fetching all products:", err);
@@ -161,9 +159,27 @@ exports.getAllProducts = (req, res) => {
   });
 };
 
+    // FUNCTION TO GET PRODUCT DETAILS
+exports.getProductsDetail = (req, res) => {
+  const { id } = req.params;
+  
+  // Assuming you're using a database query to fetch product details
+  const sql = 'SELECT * FROM products WHERE id = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error('Error fetching product details:', err);
+      return res.status(500).send('Failed to fetch product details');
+    }
+    if (result.length === 0) {
+      return res.status(404).send('Product not found');
+    }
+    res.status(200).json(result[0]);
+  });
+};
+
 
 exports.updateUserProfile = (req, res) => {
-  const userId = req.userId; 
+  const userId = req.userId;
   const { bio, location, profilePicture } = req.body;
 
   const sql = `
@@ -180,7 +196,6 @@ exports.updateUserProfile = (req, res) => {
     res.status(200).send("Profile updated successfully");
   });
 };
-
 
 exports.forgotPassword = (req, res) => {
   const { email } = req.body;

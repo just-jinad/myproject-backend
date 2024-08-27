@@ -40,6 +40,7 @@ app.post("/login", authControllers.login);
 app.post("/upload", verifyToken, authControllers.upload.array("files"), authControllers.uploadProduct);
 app.get("/user/products", verifyToken, authControllers.getUserProducts);
 app.get("/products", verifyToken, authControllers.getAllProducts);
+app.get('/products/:id', verifyToken, authControllers.getProductsDetail);
 
 app.put("/user/updateProfile", verifyToken, authControllers.updateUserProfile);
 
